@@ -1,22 +1,27 @@
 name: Rebase from upstream every 15 days
 on:
   schedule:
-    - cron:  '0 0 */15 * *' # New cron job for rebasing every 15 days
+    - cron: '0 0 */7 * *' # New cron job for rebasing every 7 days
+  workflow_dispatch: # Manual trigger
 jobs:
   rebase:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Rebase from upstream
-      run: |
-        git remote add upstream https://github.com/NagarajuGunda/NSEIndexOptionsData
-        git fetch upstream
-        git rebase upstream/main
-    - name: Push changes
-      run: |
-        git config --global user.name "shikharvaish28"
-        git config --global user.email "shikarvaish@gmail.com"
-        git push origin main
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Git identity
+        run: |
+          git config user.name "shikharvaish28"
+          git config user.email "shikarvaish@gmail.com"
+      - name: Fetch upstream changes
+        run: |
+          git remote add upstream https://github.com/NagarajuGunda/NSEIndexOptionsData
+          git fetch upstream
+      - name: Merge changes from upstream/main into main
+        run: |
+          git merge upstream/main --no-edit
+      - name: Push changes
+        run: |
+          git push origin main
